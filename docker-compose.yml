@@ -1,0 +1,25 @@
+services:
+  db:
+    image: pgvector/pgvector:0.8.7-pg18-trixie
+    container_name: enterprise-rag-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+
+#here db is the container , yaml works on indentation
+#here volumes (below) we are writing in the root level because if we remove /recreate the container data can still survive
+#CREATE EXTENSION confirms that pgvector has been enabled in your enterprise_knowledge database. (Although we downloaded an image containing pgvector, we still need to enable the extension in our database.)
+volumes:
+  postgres_data:
